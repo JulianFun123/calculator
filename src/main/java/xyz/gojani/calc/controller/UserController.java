@@ -25,7 +25,7 @@ public class UserController extends HttpController {
             userResponse.name = profile.getName();
             userResponse.avatar = profile.getAvatar();
 
-            userResponse.calculations = Repo.get(Calculation.class).where("userId", profile.getId()).order("createdAt", true).get().stream().map(calculation -> new CalculationResponse(calculation, true)).collect(Collectors.toList());
+            userResponse.calculations = Repo.get(Calculation.class).where("userId", profile.getId()).order("updatedAt", true).get().stream().map(calculation -> new CalculationResponse(calculation, true)).collect(Collectors.toList());
 
             userResponse.success = true;
         }
