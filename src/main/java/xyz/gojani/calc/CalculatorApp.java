@@ -36,6 +36,7 @@ public class CalculatorApp extends WebApplication {
         config.addEnvKeyMapping(new HashMap(){{
             put("IA_OAUTH2_CLIENT_ID", "ia.oauth2.id");
             put("IA_OAUTH2_CLIENT_SECRET", "ia.oauth2.secret");
+            put("SERVER_NAME", "server.name");
         }});
 
         config.addEnvFile(".env");
@@ -48,7 +49,7 @@ public class CalculatorApp extends WebApplication {
     }
 
     protected void setupServer(HTTPServer server) {
-        iaOAuth2Service = new InteraAppsOAuth2Service(getConfig().get("ia.oauth2.id"), getConfig().get("ia.oauth2.secret"), "http://localhost:1337").setScopes(new String[]{"user:read"});
+        iaOAuth2Service = new InteraAppsOAuth2Service(getConfig().get("ia.oauth2.id"), getConfig().get("ia.oauth2.secret"), getConfig().get("server.name")).setScopes(new String[]{"user:read"});
         oAuth2Module.addService(iaOAuth2Service);
 
         oAuth2Module.setOAuth2Callback((s, exchange, oAuth2Callback) -> {
