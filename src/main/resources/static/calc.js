@@ -141,6 +141,7 @@ function updateLogin(){
                         $n("h1").text("Create")
                     ).click(()=>{
                         newEmpty()
+                        $("#sidenav").hide()
                     })
                 )
             } else {
