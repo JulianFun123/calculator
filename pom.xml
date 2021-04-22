@@ -110,7 +110,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.interaapps.accounts.backend.InteraAppsAccounts</mainClass>
+                            <mainClass>xyz.gojani.calc.CalculatorApp</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
