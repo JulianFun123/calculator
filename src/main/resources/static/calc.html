@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://js.gjni.eu/jdom.js"></script>
+    <script src="https://js.gjni.eu/cajax/2.0.0.js"></script>
+    <script src="calc.js"></script>
+    <link rel="stylesheet" type="text/css" href="calc.css">
+    <title>Calculator</title>
+</head>
+<body>
+
+<div id="app">
+    <div id="errInfo">
+    </div>
+    <textarea id="input" spellcheck="false"></textarea>
+    <div id="preview"></div>
+
+    <div id="menu">
+        <div id="profile" class="disabled">
+            <img class="profile-picture" src="" />
+            <span class="name">Loading....</span>
+        </div>
+        <div id="right">
+            <span id="current-file">New Calculation*</span>
+            <span id="errors">Errors: 0</span>
+            <span id="lines">Lines: 0</span>
+        </div>
+    </div>
+
+    <div id="sidenav">
+        <div id="sidenav-contents">
+            <div id="sidenav-top">
+                <img class="profile-picture" src="" />
+                <span class="name">Loading....</span>
+            </div>
+            <div id="calc-list">
+                <div class="entry">
+                    <span class="date">68. 68. 2001</span>
+                    <h1>Title</h1>
+                </div>
+
+                <div class="entry create-new">
+                    <h1>Create new</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="current-calc">
+        <div>
+            <svg id="close-current-calc-menu" style="float: right;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+            <input id="title-input" type="text" placeholder="Title">
+        </div>
+        <svg id="delete-button" style="padding: 3px; margin-top: 8px; color: #ff5e5e" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+        <a id="save-button">SAVE</a>
+    </div>
+</div>
+
+
+</body>
+</html>

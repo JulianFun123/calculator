@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+Please Wait
+    <script>
+        localStorage["session"] = window.location.hash.replaceAll("#", "")
+        window.location = "/"
+    </script>
+</body>
+</html>
