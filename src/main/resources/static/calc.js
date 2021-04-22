@@ -117,6 +117,7 @@ function updateLogin(){
         .then(res=>{
             loggedIn = res.success
             if (res.success) {
+                $("#current-file").show()
                 $("#menu #profile").removeClass("disabled")
                 $(".profile-picture").attr("src", res.avatar)
                 $(".name").text(res.name)
@@ -145,6 +146,7 @@ function updateLogin(){
                     })
                 )
             } else {
+                $("#current-file").hide()
                 $("#menu #profile").addClass("disabled")
                 $("#menu #profile span").text("Log in")
             }
@@ -190,6 +192,17 @@ function save(){
                     updateLogin()
                 }
             })
+    }
+}
+
+function setTheme(mode) {
+    $("#darkmode").hide()
+    $("#lightmode").hide()
+
+    if (mode == 'darkmode') {
+        $("#darkmode").show()
+    } else {
+        $("#lightmode").show()
     }
 }
 
@@ -256,6 +269,13 @@ $(document).ready(function(){
             $("#sidenav").show()
         } else
             window.location = "/authorization/oauth2/interaapps"
+    })
+
+
+    setTheme("darkmode")
+
+    $(".darkmode-button").click(function(){
+
     })
 
     updateLogin()

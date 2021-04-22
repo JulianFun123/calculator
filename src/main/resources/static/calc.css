@@ -162,6 +162,18 @@ body {
     box-shadow: 0px 0px 10px 10px #00000011;
 }
 
+#sidenav-options {
+    margin: 10px;
+    border-top: #00000011 2px solid;
+    padding-top: 15px;
+}
+
+.darkmode-button {
+    width:  30px;
+    height: 30px;
+    cursor: pointer;
+}
+
 #sidenav-contents #sidenav-top {
     padding: 10px 15px;
 }
@@ -185,6 +197,8 @@ body {
 
 #sidenav-contents #calc-list {
     margin-top: 20px;
+    height: calc(100% - 160px);
+    overflow-y: auto;
 }
 
 #sidenav-contents #calc-list .entry {
