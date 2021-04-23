@@ -1,4 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+/* */
+:root {
+    --text-color: #323232;
+    --background-color: #FFFFFF;
+    --foreground-color: #F9F9F9;
+}
+/* */
+
+/* * /
+:root {
+    --text-color: #FFFFFF;
+    --background-color: #262b39;
+    --foreground-color: #212531;
+}
+/**/
+
 
 * {
     font-family: 'Montserrat', sans-serif;
@@ -9,17 +25,21 @@
 
 html, body {
     height: 100%;
+    background: var(--background-color);
+    color: var(--text-color);
 }
 
 body {
     padding: 20px;
     height: 100%;
+    background: var(--background-color);
 }
 
 #app {
     overflow: auto;
     min-height: 100%;
     padding-bottom: 50px;
+    background: var(--background-color);
 }
 
 #input {
@@ -30,6 +50,8 @@ body {
     line-height: 46px;
     outline: none;
     border: none;
+    background: #00000000;
+    color: var(--text-color);
 
     display: inline-block;
     vertical-align: top;
@@ -87,7 +109,7 @@ body {
     position: fixed;
     bottom: 0px;
     left: 0px;
-    background: #F8F8F8;
+    background: var(--foreground-color);
     height: 30px;
     width: 100%;
     padding: 0px 10px;
@@ -115,7 +137,7 @@ body {
 #menu #profile span {
     vertical-align: middle;
     font-weight: 500;
-    color: #434343;
+    color: var(--text-color);
     display: inline-block;
     margin-top: 2px;
     margin-left: 5px;
@@ -135,7 +157,7 @@ body {
 #menu #right span {
     vertical-align: middle;
     font-weight: 500;
-    color: #434343;
+    color: var(--text-color);
     display: inline-block;
     margin-top: 4.3px;
     font-size: 18px;
@@ -153,7 +175,7 @@ body {
 }
 
 #sidenav-contents {
-    background: #FFFFFF;
+    background: var(--foreground-color);
     width: 380px;
     height: 100%;
     position: fixed;
@@ -191,7 +213,7 @@ body {
     font-size: 25px;
     margin-left: 14px;
     font-weight: 600;
-    color: #545454;
+    color: var(--text-color);
     font-family: "Space Mono";
 }
 
@@ -213,7 +235,7 @@ body {
 #sidenav-contents #calc-list .entry h1 {
     font-size: 24px;
     font-weight: 500;
-    color: #565656;
+    color: var(--text-color);
     vertical-align: middle;
 }
 
@@ -239,7 +261,7 @@ body {
 #current-calc {
     position: fixed;
     bottom: 50px;
-    background: #FFF;
+    background: var(--foreground-color);
     box-shadow: 0px 0px 10px 10px #00000011;
     padding: 10px;
     right: 30px;
@@ -255,6 +277,7 @@ body {
     vertical-align: middle;
     outline: none;
     background: #00000000;
+    color: var(--text-color);
     display: inline-block;
 }
 

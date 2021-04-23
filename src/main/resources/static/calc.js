@@ -90,6 +90,7 @@ function newEmpty(contents = "// Welcome to this awesome calculator!\n9+6\n3^3\n
     originalContents = contents
     $("#input").val(contents)
     $("#title-input").val("Untitled")
+    window.location.hash = ""
     updateTitle()
     calcAll()
 }
@@ -200,8 +201,16 @@ function setTheme(mode) {
     $("#lightmode").hide()
 
     if (mode == 'darkmode') {
+        document.documentElement.style.setProperty('--text-color', "#FFFFFF");
+        document.documentElement.style.setProperty('--background-color', "#262b39");
+        document.documentElement.style.setProperty('--foreground-color', "#212531");
+
         $("#darkmode").show()
     } else {
+        document.documentElement.style.setProperty('--text-color', "#323232");
+        document.documentElement.style.setProperty('--background-color', "#FFFFFF");
+        document.documentElement.style.setProperty('--foreground-color', "#F9F9F9");
+
         $("#lightmode").show()
     }
 }
@@ -271,11 +280,17 @@ $(document).ready(function(){
             window.location = "/authorization/oauth2/interaapps"
     })
 
+    if (!localStorage["theme"])
+        localStorage["theme"] = "lightmode"
 
-    setTheme("darkmode")
+    setTheme(localStorage["theme"])
 
     $(".darkmode-button").click(function(){
-
+        if (localStorage["theme"] == 'lightmode')
+            localStorage["theme"] = 'darkmode'
+        else
+            localStorage["theme"] = 'lightmode'
+        setTheme(localStorage["theme"])
     })
 
     updateLogin()
