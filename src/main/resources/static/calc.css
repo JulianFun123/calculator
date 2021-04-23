@@ -35,6 +35,10 @@ body {
     background: var(--background-color);
 }
 
+img {
+    object-fit: cover;
+}
+
 #app {
     overflow: auto;
     min-height: 100%;
@@ -128,6 +132,7 @@ body {
 
 #menu #profile img {
     height: 25px;
+    width: 25px;
     margin-top: 2.5px;
     border-radius: 100%;
     vertical-align: middle;
