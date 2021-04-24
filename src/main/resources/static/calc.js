@@ -11,6 +11,42 @@ const client = new PrajaxClient({
     }
 })
 
+
+const FORMULAS = {
+    "Satz des Pythagoras": "a^2 * b^2",
+    "Flächeninhalt eines Quadrates": "a^2",
+    "Flächeninhalt eines Dreiecks": "a * h / 2",
+    "Flächeninhalt eines Rechtecks": "a * b",
+    "Flächeninhalt eines Trapezes": "(a+c)*h / 2",
+    "Flächeninhalt eines Kreises": "r^2*pi",
+    "Flächeninhalt eines Kreissektors": "(r^2*pi*a) / 360",
+
+    "Umfang eines Quadrates": "4*a",
+    "Umfang eines Rechtecks": "2*(a+b)",
+    "Umfang eines Kreissektors": "2*r + b",
+
+    "Volumen eines Körpers": "a * b * c",
+    "Relativitätstheorie": "mc^2",
+    "Gravitationsgesetz": "G*(m1*m2 / r2)",
+
+    "Zufällige Zahl (0-1)": "rand()",
+    "Zufällige ganze Zahl": "randInt(a, b)",
+
+    "cosinus": "cos(x)",
+    "tanges": "tan(x)",
+    "sinus": "sin(x)",
+
+    "arctangens (tan⁻¹)": "atan(x)",
+    "arckosinus (cos⁻¹)": "acos(x)",
+    "arcsinus (sin⁻¹)": "asin(x)",
+
+    "pi (Symbole)": "π",
+    "pi": "pi",
+
+    "Wurzel (√)": "log(x)"
+
+}
+
 function calcAll(){
     $("#preview").html("")
     $("#errInfo").html("")
@@ -25,9 +61,16 @@ function calcAll(){
             function atan(a) { return Math.atan(a) }
             function sin(a) { return Math.sin(a) }
             function asin(a) { return Math.asin(a) }
+            function round(a) { return Math.round(a) }
+            function floor(a) { return Math.floor(a) }
+            function min(a,b) { return Math.min(a,b) }
+            function max(a,b) { return Math.max(a,b) }
+            function rand() { return Math.random() }
+            function randInt(min = 0, max = 1) { return Math.floor(Math.random() * max + min) }
 
             pi = Math.PI
             π = Math.PI
+            E = Math.E
             `;
     let lastResult = null
     let lines = 0
@@ -215,17 +258,46 @@ function setTheme(mode) {
     }
 }
 
+function updateHeight(jumpToBottom = false){
+    $("#input").getFirstElement().style.height = "1px"
+    $("#input").getFirstElement().style.height = $("#input").getFirstElement().scrollHeight+"px"
+    if (jumpToBottom)
+        window.scrollTo(0,document.body.scrollHeight);
+
+}
+
+function renderFormularList() {
+    const search = $("#formula-search").val().toLowerCase().replaceAll(" ", "")
+    $("#formulas-list .entries").html("")
+    for (const formular in FORMULAS) {
+        if (
+            formular.toLowerCase().replaceAll(" ", "").includes(search) ||
+            FORMULAS[formular].toLowerCase().replaceAll(" ", "").includes(search)
+        ) {
+            $("#formulas-list .entries").append(
+                $n("div").addClass("entry")
+                    .append($n("h1").text(formular))
+                    .append($n("pre").text(FORMULAS[formular]))
+                    .click(() => {
+                        $("#input").val($("#input").val() + "\n\n" + FORMULAS[formular])
+                        updateHeight(true)
+                        calcAll()
+                        $("#formulas-list").hide()
+                    })
+            )
+        }
+    }
+}
+
 $(document).ready(function(){
     calcAll()
-    $("#input").keyup(function(e){
+    $("#input").on("input", function(e){
         calcAll()
 
-        $("#input").getFirstElement().style.height = $("#input").getFirstElement().scrollHeight+"px"
-        console.log(e.keycode);
-        if (e.keycode) {
-            window.scrollTo(0,document.body.scrollHeight);
-        }
+        updateHeight(e.keyCode == 13)
+
         localStorage["saveState"] = $("#input").val()
+
 
         hasChanges = $("#input").val() != originalContents
         updateTitle()
@@ -241,6 +313,7 @@ $(document).ready(function(){
     })
 
     $("#current-file").click(()=>{
+        $("#formulas-list").hide()
         $("#current-calc").toggle()
     })
 
@@ -311,6 +384,23 @@ $(document).ready(function(){
             save()
             e.preventDefault()
         }
+    })
+
+    $("#formulas-list").hide()
+
+    renderFormularList()
+
+    $("#formulas").click(()=>{
+        $("#current-calc").hide()
+        $("#formulas-list").toggle()
+    })
+
+    $("#formula-search").keyup(()=>{
+        renderFormularList()
+    })
+
+    $("#close-formulas-menu").click(function () {
+        $("#formulas-list").hide()
     })
 
     updateTitle()

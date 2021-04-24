@@ -273,7 +273,7 @@ img {
     border-radius: 10px;
 }
 
-#current-calc input {
+.input {
     padding: 6px;
     font-size: 18px;
     border: #00000022 2px solid;
@@ -284,6 +284,11 @@ img {
     background: #00000000;
     color: var(--text-color);
     display: inline-block;
+    width: 100%;
+}
+
+#current-calc input {
+    width: 250px;
 }
 
 #current-calc svg {
@@ -306,4 +311,56 @@ img {
     border-radius: 5px;
     cursor: pointer;
     box-shadow: 0px 0px 2px 0px #00000044;
+}
+
+#formulas {
+    cursor: pointer;
+}
+
+#formulas-list {
+    position: fixed;
+    width: 310px;
+    height: 450px;
+    bottom: 40px;
+    right: 20px;
+    background: var(--foreground-color);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0px 0px 2px 0px #00000044;
+    overflow-x: auto;
+}
+
+#formulas-list h1 {
+    font-size: 26px;
+    font-family: 'Space Mono', monospace;
+}
+
+#formulas-list .entry {
+    padding: 10px;
+    border: #00000044 solid 2.5px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#formulas-list .entry h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 23px;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+#formulas-list .entry pre {
+    font-family: 'Space Mono', monospace;
+    font-size: 19px;
+}
+
+#close-formulas-menu {
+    width: 32px;
+    vertical-align: middle;
+    height: 42px;
+    display: inline-block;
+    margin-left: 5px;
+    cursor: pointer;
+    float: right;
+
 }
