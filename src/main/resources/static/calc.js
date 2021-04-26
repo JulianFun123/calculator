@@ -71,6 +71,7 @@ function calcAll(){
             pi = Math.PI
             π = Math.PI
             E = Math.E
+            ;
             `;
     let lastResult = null
     let lines = 0
@@ -103,6 +104,11 @@ function calcAll(){
                         }
                         // console.log(line);
                     }
+
+                    if (trimmedLine.startsWith("(")) {
+                        line =  ";"+line;
+                    }
+
                     lastResult = eval("\n"+(previousLines+line).replaceAll('^', '**'))
                     $("#preview").html($("#preview").html()+lastResult+"<br>")
                     previousLines += ""+line+"\n"
