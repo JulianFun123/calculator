@@ -106,7 +106,7 @@ function calcAll(){
                     }
 
                     if (trimmedLine.startsWith("(")) {
-                        line =  ";"+line;
+                        line =  "; "+line;
                     }
 
                     lastResult = eval("\n"+(previousLines+line).replaceAll('^', '**'))
