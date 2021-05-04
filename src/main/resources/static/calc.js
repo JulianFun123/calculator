@@ -69,7 +69,10 @@ function calcAll(){
             function max(a,b) { return Math.max(a,b) }
             function rand() { return Math.random() }
             function randInt(min = 0, max = 1) { return Math.floor(Math.random() * max + min) }
-
+            function sqrt(a) { return Math.sqrt(a) }
+            function wurzel(a) { return Math.sqrt(a) }
+            
+            
             pi = Math.PI
             π = Math.PI
             E = Math.E
