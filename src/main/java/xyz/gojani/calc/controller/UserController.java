@@ -22,7 +22,9 @@ public class UserController extends HttpController {
 
         if (session != null) {
             Profile profile = session.getUser();
+
             userResponse.name = profile.getName();
+            userResponse.nickName = profile.get("full_name");
             userResponse.avatar = profile.getAvatar();
 
             userResponse.calculations = Repo.get(Calculation.class).where("userId", profile.getId()).order("updatedAt", true).get().stream().map(calculation -> new CalculationResponse(calculation, true)).collect(Collectors.toList());

@@ -25,7 +25,9 @@ const FORMULAS = {
     "Umfang eines Rechtecks": "2*(a+b)",
     "Umfang eines Kreissektors": "2*r + b",
 
-    "Volumen eines Körpers": "a * b * c",
+    "Volumen eines Körpers":  "a * b * c",
+    "Volumen einer Pyramide": "(G*h) / 3",
+
     "Relativitätstheorie": "mc^2",
     "Gravitationsgesetz": "G*(m1*m2 / r2)",
 
@@ -55,11 +57,11 @@ function calcAll(){
                 return Math.log(a)
             }
 
-            function cos(a) { return Math.cos(a) }
+            function cos(a) { return Math.cos(a * Math.PI / 180 ) }
             function acos(a) { return Math.acos(a) }
-            function tan(a) { return Math.tan(a) }
+            function tan(a) { return Math.tan(a * Math.PI / 180 ) }
             function atan(a) { return Math.atan(a) }
-            function sin(a) { return Math.sin(a) }
+            function sin(a) { return Math.sin(a * Math.PI / 180 ) }
             function asin(a) { return Math.asin(a) }
             function round(a) { return Math.round(a) }
             function floor(a) { return Math.floor(a) }
@@ -170,7 +172,7 @@ function updateLogin(){
                 $("#current-file").show()
                 $("#menu #profile").removeClass("disabled")
                 $(".profile-picture").attr("src", res.avatar)
-                $(".name").text(res.name)
+                $(".name").text(res.nick_name)
 
                 $("#calc-list").html("")
 
