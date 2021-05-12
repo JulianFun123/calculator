@@ -13,11 +13,12 @@ const client = new PrajaxClient({
 
 
 const FORMULAS = {
-    "Satz des Pythagoras": "a^2 * b^2",
+    "Satz des Pythagoras": "sqrt(a^2 + b^2)",
+    "Satz des Pythagoras (Mit Hypotenuse)": "sqrt(c^2 - a^2)",
     "Flächeninhalt eines Quadrates": "a^2",
     "Flächeninhalt eines Dreiecks": "a * h / 2",
     "Flächeninhalt eines Rechtecks": "a * b",
-    "Flächeninhalt eines Trapezes": "(a+c)*h / 2",
+    "Flächeninhalt eines Trapezes": "(a+c) * h / 2",
     "Flächeninhalt eines Kreises": "r^2*pi",
     "Flächeninhalt eines Kreissektors": "(r^2*pi*a) / 360",
 
@@ -25,11 +26,8 @@ const FORMULAS = {
     "Umfang eines Rechtecks": "2*(a+b)",
     "Umfang eines Kreissektors": "2*r + b",
 
-    "Volumen eines Körpers":  "a * b * c",
+    "Volumen eines Quaders":  "a * b * c",
     "Volumen einer Pyramide": "(G*h) / 3",
-
-    "Relativitätstheorie": "mc^2",
-    "Gravitationsgesetz": "G*(m1*m2 / r2)",
 
     "Zufällige Zahl (0-1)": "rand()",
     "Zufällige ganze Zahl": "randInt(a, b)",
@@ -42,11 +40,10 @@ const FORMULAS = {
     "arckosinus (cos⁻¹)": "acos(x)",
     "arcsinus (sin⁻¹)": "asin(x)",
 
-    "pi (Symbole)": "π",
+    "pi (Symbol)": "π",
     "pi": "pi",
 
-    "Wurzel (√)": "log(x)"
-
+    "Wurzel (√)": "sqrt(x)"
 }
 
 function calcAll(){
@@ -56,13 +53,13 @@ function calcAll(){
             function log(a) {
                 return Math.log(a)
             }
-
+            
             function cos(a) { return Math.cos(a * Math.PI / 180 ) }
-            function acos(a) { return Math.acos(a) }
+            function acos(a) { return Math.acos(a)*180/Math.PI }
             function tan(a) { return Math.tan(a * Math.PI / 180 ) }
-            function atan(a) { return Math.atan(a) }
+            function atan(a) { return Math.atan(a)*180/Math.PI }
             function sin(a) { return Math.sin(a * Math.PI / 180 ) }
-            function asin(a) { return Math.asin(a) }
+            function asin(a) { return Math.asin(a)*180/Math.PI }
             function round(a) { return Math.round(a) }
             function floor(a) { return Math.floor(a) }
             function min(a,b) { return Math.min(a,b) }
