@@ -357,8 +357,28 @@ $(document).ready(function(){
     $("#profile").click(function () {
         if (loggedIn) {
             $("#sidenav").show()
-        } else
-            window.location = "/authorization/oauth2/interaapps"
+        } else {
+            client.get("/oauth/info")
+                .then(res => res.json())
+                .then(res => {
+                    new IAOAuth2(res.client_id)
+                        .addScope("user:read")
+                        .openInNewWindow("/logging_in.html")
+                            .then(res => {
+                                client.get("/authorization/oauth2/interaapps/callback", {
+                                    code: res.code,
+                                    popup: "true"
+                                })
+                                    .then(res=>res.json())
+                                    .then(res => {
+                                        localStorage["session"] = res.session
+                                        client.options.header["Authorization"] = "Bearer "+res.session
+                                        updateLogin()
+                                    })
+                            })
+                })
+            //window.location = "/authorization/oauth2/interaapps"
+        }
     })
 
     if (!localStorage["theme"])

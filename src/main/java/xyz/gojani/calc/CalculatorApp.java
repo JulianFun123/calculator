@@ -20,9 +20,11 @@ import org.javawebstack.passport.services.oauth2.OAuth2CallbackHandler;
 import org.javawebstack.validator.ValidationException;
 import xyz.gojani.calc.controller.UserController;
 import xyz.gojani.calc.models.Session;
+import xyz.gojani.calc.responses.SessionResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CalculatorApp extends WebApplication {
     private OAuth2Module oAuth2Module;
@@ -57,6 +59,12 @@ public class CalculatorApp extends WebApplication {
             session.accessToken = oAuth2Callback.getToken();
             session.refreshToken = oAuth2Callback.getRefreshToken();
             session.save();
+            if (exchange.rawRequest().getParameter("popup") != null) {
+                SessionResponse response = new SessionResponse();
+                response.session = session.id;
+                response.success = true;
+                return response;
+            }
             exchange.redirect("/login.html#"+session.id);
             return "";
         });
@@ -92,6 +100,13 @@ public class CalculatorApp extends WebApplication {
                 exchange.write(getClass().getClassLoader().getResourceAsStream("static/calc.html"));
             } catch (IOException ignore) { }
             return "";
+        });
+
+        server.get("/oauth/info", exchange -> {
+            Map<String, Object> response = new HashMap<>();
+            response.put("client_id", getConfig().get("ia.oauth2.id"));
+            response.put("type", "INTERAAPPS");
+            return response;
         });
 
         server.staticResourceDirectory("/", getClass().getClassLoader(), "static");
