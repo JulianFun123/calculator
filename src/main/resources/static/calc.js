@@ -112,13 +112,75 @@ function calcAll(){
                     }
 
                     lastResult = eval("\n"+(previousLines+line).replaceAll('^', '**'))
-                    $("#preview").html($("#preview").html()+lastResult+"<br>")
+                    const currentResult = lastResult
+
+                    if (typeof currentResult == 'function') {
+                        const popup = $n("div").css({
+                            'padding': '10px',
+                            'background': '#FFF',
+                            position: 'absolute',
+                            'border': '#00000011 solid 2px',
+                            'border-radius': '14px'
+                        }).hide()
+
+                        //.hide()
+                        const canvasEl = $n("canvas")
+                        canvasEl.getFirstElement().width = 100
+                        canvasEl.getFirstElement().height = 100
+                        popup.append(canvasEl)
+
+                        $("#preview")
+                            .append(
+                                $n("a").text("draw")
+                                    .css({
+                                        background: "#00000011",
+                                        'border-radius': "5px",
+                                        padding: "1px 4px",
+                                        'margin-right': '10px',
+                                        'font-size': "20px",
+                                        'vertical-align': 'middle',
+                                        'cursor': "pointer"
+                                    })
+                                    .click(()=>{
+                                        popup.toggle()
+                                        const canvas = canvasEl.getFirstElement().getContext("2d")
+                                        let lastLine = null
+                                        canvas.fillStyle = "#00000011"
+                                        canvas.fillOpacity = 0.2
+                                        canvas.lineWidth=0.5
+                                        canvas.moveTo(50,0)
+                                        canvas.lineTo(50,100)
+                                        canvas.moveTo(0,50)
+                                        canvas.lineTo(100,50)
+                                        canvas.fillStyle = "#000000"
+                                        canvas.fillOpacity = 1
+                                        canvas.lineWidth=1
+                                        for (let y = -100; y < 100; y++) {
+                                            const x = currentResult(y)
+                                            //canvas.fillRect(x/2, y+50, 1, 1)
+                                            if (lastLine) {
+                                                console.log("yee")
+                                                canvas.moveTo(y+50, -x+50)
+                                                canvas.lineTo(lastLine.y+50, -lastLine.x+50)
+                                            }
+                                            canvas.stroke();
+                                            lastLine = {x, y}
+                                        }
+                                    })
+                            )
+                            .append(popup)
+                    }
+
+                    $("#preview").getFirstElement().appendChild(document.createTextNode(currentResult))
+
+                    $("#preview").append($n("br"))
                     previousLines += ""+line+"\n"
                 } else {
-                    $("#preview").html($("#preview").html()+"<br>")
+                    $("#preview").append($n("br"))
                 }
             } catch(e) {
-                $("#preview").html($("#preview").html()+"<i style='color: #00000022'>Error: "+e.message+"</i><br>")
+                $("#preview").append($n("i").css("color", "#00000022").text(e.message))
+                $("#preview").append($n("br"))
                 lineInfo.addClass('error').attr("title", e.message)
                 errors++
             }
@@ -371,6 +433,7 @@ $(document).ready(function(){
                                 })
                                     .then(res=>res.json())
                                     .then(res => {
+                                        console.log(res)
                                         localStorage["session"] = res.session
                                         client.options.header["Authorization"] = "Bearer "+res.session
                                         updateLogin()

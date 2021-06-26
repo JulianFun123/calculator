@@ -42,6 +42,10 @@ public class CalculatorApp extends WebApplication {
         }});
 
         config.addEnvFile(".env");
+
+        iaOAuth2Service = new InteraAppsOAuth2Service(getConfig().get("ia.oauth2.id"), getConfig().get("ia.oauth2.secret"), getConfig().get("server.name")).setScopes(new String[]{"user:read"});
+        oAuth2Module.addService(iaOAuth2Service);
+
     }
 
     protected void setupModels(SQL sql) throws ORMConfigurationException {
@@ -51,8 +55,6 @@ public class CalculatorApp extends WebApplication {
     }
 
     protected void setupServer(HTTPServer server) {
-        iaOAuth2Service = new InteraAppsOAuth2Service(getConfig().get("ia.oauth2.id"), getConfig().get("ia.oauth2.secret"), getConfig().get("server.name")).setScopes(new String[]{"user:read"});
-        oAuth2Module.addService(iaOAuth2Service);
 
         oAuth2Module.setOAuth2Callback((s, exchange, oAuth2Callback) -> {
             Session session = new Session();
