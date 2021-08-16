@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@200;300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 /* */
 :root {
     --text-color: #323232;
@@ -17,7 +17,7 @@
 
 
 * {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     box-sizing: border-box;
     padding: 0px;
     margin: 0px;
@@ -171,7 +171,8 @@ img {
 }
 
 #sidenav {
-    background: #00000011;
+    background: rgba(94, 94, 94, 0.07);
+    backdrop-filter: blur(18px);
     width: 100%;
     height: 100%;
     position: fixed;
@@ -180,29 +181,29 @@ img {
 }
 
 #sidenav-contents {
-    background: var(--foreground-color);
-    width: 380px;
+    /*background: var(--foreground-color);*/
+    width: 100%;
     height: 100%;
     position: fixed;
     left: 0px;
     top: 0px;
     box-shadow: 0px 0px 10px 10px #00000011;
+    padding: 40px;
 }
 
 #sidenav-options {
-    margin: 10px;
-    border-top: #00000011 2px solid;
-    padding-top: 15px;
+    /*border-top: #00000011 2px solid;
+    padding-top: 15px;*/
 }
 
 .darkmode-button {
     width:  30px;
     height: 30px;
     cursor: pointer;
+    float: right;
 }
 
 #sidenav-contents #sidenav-top {
-    padding: 10px 15px;
 }
 
 #sidenav-contents #sidenav-top img {
@@ -214,44 +215,122 @@ img {
 }
 
 #sidenav-contents #sidenav-top span {
-    vertical-align: middle;
-    font-size: 25px;
-    margin-left: 14px;
-    font-weight: 600;
+    font-size: 44px;
+    font-weight: 400;
+    margin-top: 5px;
+    margin-bottom: 40px;
+    display: block;
     color: var(--text-color);
-    font-family: "Space Mono";
+    font-family: "DM Sans";
 }
 
 #sidenav-contents #calc-list {
     margin-top: 20px;
-    height: calc(100% - 160px);
+    height: calc(100% - 123px);
     overflow-y: auto;
 }
 
 #sidenav-contents #calc-list .entry {
-    padding: 10px 20px;
+    padding: 15px;
     cursor: pointer;
+    display: inline-block;
+    width: 330px;
+    height: 160px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    background: #FFF;
+    border-radius: 20px;
+    background: var(--background-color);
+    position: relative;
+    vertical-align: middle;
 }
 
+
 #sidenav-contents #calc-list .entry:hover {
-    background: #00000011;
+    background: var(--foreground-color);
 }
 
 #sidenav-contents #calc-list .entry h1 {
     font-size: 24px;
     font-weight: 500;
     color: var(--text-color);
+}
+
+.create-calc, #close-button {
     vertical-align: middle;
+    display: inline-block;
+    margin-left: 20px;
+    padding: 20px;
+    border-radius: 100px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.create-calc:hover, #close-button:hover {
+    background: #00000011;
+}
+.create-calc svg, #close-button svg {
+    display: block;
+    height: 54px;
+    width:  54px;
+}
+
+#sidenav-contents #calc-list .entry pre {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-color);
+    overflow: hidden;
+    height: calc(100% - 26px);
+    opacity: 0.8;
+    font-family: "Space Mono", monospace;
 }
 
 #sidenav-contents #calc-list .entry .date {
-    float: right;
-
-    color: #989898;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 17px;
+    color: #aaaaaa;
 }
 
 #sidenav-contents #calc-list .entry.create-new {
     margin-top: 20px;
+}
+
+@media screen and (max-width: 1524px) {
+    #sidenav-contents #calc-list .entry {
+        width: 280px;
+        height: 150px;
+    }
+    .create-calc svg, #close-button svg {
+        height: 44px;
+        width:  44px;
+    }
+
+    #sidenav-contents #calc-list .entry h1 {
+        font-size: 21px;
+    }
+
+    #sidenav-contents #calc-list .entry pre {
+        font-size: 19px;
+    }
+
+}
+
+@media screen and (max-width: 824px) {
+    #sidenav-contents #calc-list .entry {
+        width: 260px;
+        height: 140px;
+    }
+}
+
+#close-button {
+    float: right;
+    transform: rotate(45deg);
+    padding: 13px;
+}
+#close-button svg {
+    width: 35px;
+    height: 35px;
 }
 
 #current-file {

@@ -111,7 +111,19 @@ function calcAll(){
                         line =  "; "+line;
                     }
 
-                    lastResult = eval("\n"+(previousLines+line).replaceAll('^', '**'))
+                    lastResult = eval("\n"+(previousLines+line)
+                        .replaceAll('^', '**')
+                        .replaceAll('¹', '**1')
+                        .replaceAll('²', '**2')
+                        .replaceAll('³', '**3')
+                        .replaceAll('⁴', '**4')
+                        .replaceAll('⁵', '**5')
+                        .replaceAll('⁶', '**6')
+                        .replaceAll('⁷', '**7')
+                        .replaceAll('⁸', '**8')
+                        .replaceAll('⁹', '**9')
+                    )
+
                     const currentResult = lastResult
 
                     if (typeof currentResult == 'function') {
@@ -235,6 +247,7 @@ function updateLogin(){
                 $("#menu #profile").removeClass("disabled")
                 $(".profile-picture").attr("src", res.avatar)
                 $(".name").text(res.nick_name)
+                $("#sidenav-user-name").text(`Welcome, ${res.nick_name}`)
 
                 $("#calc-list").html("")
 
@@ -244,6 +257,8 @@ function updateLogin(){
                             $n("span").addClass("date").text(item.updated_at)
                         ).append(
                             $n("h1").text(item.title)
+                        ).append(
+                            $n("pre").text(item.contents)
                         ).click(()=>{
                             loadCalc(item.id)
                             window.location.hash = item.id
@@ -252,9 +267,9 @@ function updateLogin(){
                     )
                 }
                 $("#calc-list").append(
-                    $n("div").addClass("entry").append(
-                        $n("h1").text("Create")
-                    ).click(()=>{
+                    $n("div").addClass("create-calc")
+                        .html(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>`)
+                    .click(()=>{
                         newEmpty()
                         $("#sidenav").hide()
                     })
@@ -408,6 +423,10 @@ $(document).ready(function(){
     })
 
     $("#sidenav").click(()=>{
+        $("#sidenav").hide()
+    })
+
+    $("#close-button").click(()=>{
         $("#sidenav").hide()
     })
 
