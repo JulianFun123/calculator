@@ -32,6 +32,8 @@ public class Calculation extends Model {
     @Column
     public Timestamp updatedAt;
 
+    public boolean offline = false;
+
     public Calculation(){
         id = RandomStringUtils.random(15, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
     }

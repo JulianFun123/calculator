@@ -208,14 +208,23 @@ let currentId = null
 let currentTitle = "Untitled"
 let originalContents = ""
 let hasChanges = false
-
+let user = false
 function newEmpty(contents = "// Welcome to this awesome calculator!\n9+6\n3^3\nx = 99\n99+x\n\nlog(44+x)\n\n1+1 // Comment: This adds 1 to 1\na+4 // Causes an error\n\n// Multiline (Experimental)\n6+6\n + 4\n / 4\n - 2\n * 2"){
     currentId = null
-    currentTitle = "Untitled"
+    const date = new Date()
+    currentTitle = `Untitled ${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`
+    let i = 1
+    if (user) {
+        while (user.calculations.filter(calc=>calc.title == currentTitle).length > 0) {
+            currentTitle = `Untitled ${date.getDate()}.${date.getMonth()}.${date.getFullYear()} (${i})`
+            i++
+        }
+    }
     originalContents = contents
     $("#input").val(contents)
     $("#title-input").val("Untitled")
     window.location.hash = ""
+    hasChanges = false
     updateTitle()
     calcAll()
 }
@@ -254,6 +263,8 @@ function afterLogin(res){
     $(".name").text(res.nick_name)
     $("#sidenav-user-name").text(`Welcome, ${res.nick_name}`)
 
+    user = res
+
     $("#calc-list").html("")
 
     for (const item of res.calculations) {
@@ -283,7 +294,7 @@ function afterLogin(res){
 
 function updateLogin(){
     if (navigator.onLine)
-        client.get("/api/v1/user")
+        return client.get("/api/v1/user")
             .then(res=>res.json())
             .then(res=>{
                 loggedIn = res.success
@@ -299,6 +310,7 @@ function updateLogin(){
     else if (localStorage["last-online"]) {
         loggedIn = true
         afterLogin(JSON.parse(localStorage["last-online"]))
+        return new Promise((r)=>{r()})
     }
 }
 
@@ -308,7 +320,7 @@ function updateTitle(){
         .css({
             "fontWeight": hasChanges ? 700 : 600
         })
-
+    $("#title-input").val(currentTitle)
 }
 
 function addUpdate(update){
@@ -318,6 +330,8 @@ function addUpdate(update){
     let lastUpdates = JSON.parse(localStorage["last-updates"])
     lastUpdates.push(update)
     localStorage["last-updates"] = JSON.stringify(lastUpdates)
+
+
 }
 
 function save(){
@@ -451,15 +465,26 @@ $(document).ready(function(){
             .then(res=>res.json())
             .then(res => {
                 if (res.success) {
-                    hasChanges = true
+                    hasChanges = false
                     $("#sidenav").show()
                     newEmpty()
                     updateTitle()
                     $("#current-calc").hide()
                     updateLogin()
+                        .then(()=>{
+                            if (loggedIn)
+                                $("#sidenav").show()
+                        })
                 }
             })
     })
+
+    setInterval(()=>{
+        console.log("AUTO",hasChanges)
+        if (hasChanges) {
+            save()
+        }
+    }, 30*1000)
 
     $("#sidenav").click(()=>{
         $("#sidenav").hide()
@@ -516,6 +541,11 @@ $(document).ready(function(){
     })
 
     updateLogin()
+        .then(()=>{
+            if (loggedIn && window.location.hash === "") {
+                $("#sidenav").show()
+            }
+        })
 
     if (window.location.hash)
         loadCalc(window.location.hash.replaceAll("#", ""))
