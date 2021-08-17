@@ -32,6 +32,7 @@
         <div id="profile" class="disabled">
             <img class="profile-picture" src="" />
             <span class="name">Loading....</span>
+            <span id="offline-badge" style="color: #878787"><b>OFFLINE</b></span>
         </div>
         <div id="right">
             <span id="current-file">New Calculation*</span>
@@ -83,6 +84,21 @@
     </div>
 </div>
 
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+                console.log('Registered!');
+            }, function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+            }).catch(function(err) {
+                console.log(err);
+            });
+        });
+    } else {
+        console.log('service worker is not supported');
+    }
+</script>
 
 </body>
 </html>

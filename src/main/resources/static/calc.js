@@ -221,65 +221,85 @@ function newEmpty(contents = "// Welcome to this awesome calculator!\n9+6\n3^3\n
 }
 
 function loadCalc(id){
+    const handleLoad = res => {
+        currentId = res.id
+        currentTitle = res.title
+        originalContents = res.contents
+        $("#input").val(res.contents)
+        $("#title-input").val(res.title)
+        updateTitle()
+        calcAll()
+    }
 
-    client.get("/api/v1/calculation/"+id)
-        .then(res=>res.json())
-        .then(res=>{
-            if (res.success) {
-                currentId = res.id
-                currentTitle = res.title
-                originalContents = res.contents
-                $("#input").val(res.contents)
-                $("#title-input").val(res.title)
-                updateTitle()
-                calcAll()
-            }
-        })
+    if (navigator.onLine) {
+        client.get("/api/v1/calculation/" + id)
+            .then(res => res.json())
+            .then(res=> {
+                if (res.success)
+                    handleLoad(res)
+            })
+    } else if (localStorage["last-online"]) {
+        const lastOnline = JSON.parse(localStorage["last-online"])
+
+        lastOnline.calculations
+            .filter(c=>c.id==id)
+            .forEach(calc => handleLoad(calc))
+    }
+}
+
+function afterLogin(res){
+    $("#current-file").show()
+    $("#menu #profile").removeClass("disabled")
+    $(".profile-picture").attr("src", res.avatar)
+    $(".name").text(res.nick_name)
+    $("#sidenav-user-name").text(`Welcome, ${res.nick_name}`)
+
+    $("#calc-list").html("")
+
+    for (const item of res.calculations) {
+        $("#calc-list").append(
+            $n("div").addClass("entry").append(
+                $n("span").addClass("date").text(item.updated_at)
+            ).append(
+                $n("h1").text(item.title)
+            ).append(
+                $n("pre").text(item.contents)
+            ).click(()=>{
+                loadCalc(item.id)
+                window.location.hash = item.id
+                $("#sidenav").hide()
+            })
+        )
+    }
+    $("#calc-list").append(
+        $n("div").addClass("create-calc")
+            .html(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>`)
+            .click(()=>{
+                newEmpty()
+                $("#sidenav").hide()
+            })
+    )
 }
 
 function updateLogin(){
-    client.get("/api/v1/user")
-        .then(res=>res.json())
-        .then(res=>{
-            loggedIn = res.success
-            if (res.success) {
-                $("#current-file").show()
-                $("#menu #profile").removeClass("disabled")
-                $(".profile-picture").attr("src", res.avatar)
-                $(".name").text(res.nick_name)
-                $("#sidenav-user-name").text(`Welcome, ${res.nick_name}`)
-
-                $("#calc-list").html("")
-
-                for (const item of res.calculations) {
-                    $("#calc-list").append(
-                        $n("div").addClass("entry").append(
-                            $n("span").addClass("date").text(item.updated_at)
-                        ).append(
-                            $n("h1").text(item.title)
-                        ).append(
-                            $n("pre").text(item.contents)
-                        ).click(()=>{
-                            loadCalc(item.id)
-                            window.location.hash = item.id
-                            $("#sidenav").hide()
-                        })
-                    )
+    if (navigator.onLine)
+        client.get("/api/v1/user")
+            .then(res=>res.json())
+            .then(res=>{
+                loggedIn = res.success
+                if (res.success) {
+                    afterLogin(res)
+                    localStorage["last-online"] = JSON.stringify(res)
+                } else {
+                    $("#current-file").hide()
+                    $("#menu #profile").addClass("disabled")
+                    $("#menu #profile span").text("Log in")
                 }
-                $("#calc-list").append(
-                    $n("div").addClass("create-calc")
-                        .html(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>`)
-                    .click(()=>{
-                        newEmpty()
-                        $("#sidenav").hide()
-                    })
-                )
-            } else {
-                $("#current-file").hide()
-                $("#menu #profile").addClass("disabled")
-                $("#menu #profile span").text("Log in")
-            }
-        })
+            })
+    else if (localStorage["last-online"]) {
+        loggedIn = true
+        afterLogin(JSON.parse(localStorage["last-online"]))
+    }
 }
 
 function updateTitle(){
@@ -291,6 +311,15 @@ function updateTitle(){
 
 }
 
+function addUpdate(update){
+    if (!localStorage["last-updates"])
+        localStorage["last-updates"] = "[]"
+
+    let lastUpdates = JSON.parse(localStorage["last-updates"])
+    lastUpdates.push(update)
+    localStorage["last-updates"] = JSON.stringify(lastUpdates)
+}
+
 function save(){
     const data = {
         title: $("#title-input").val(),
@@ -299,28 +328,38 @@ function save(){
 
     currentTitle = $("#title-input").val()
 
-    if (currentId) {
-        client.put("/api/v1/calculation/"+currentId, data)
-            .then(res=>res.json())
-            .then(res=>{
-                if (res.success) {
-                    hasChanges = false
-                    originalContents = $("#input").val()
-                    updateTitle()
-                    updateLogin()
-                }
-            })
+    if (navigator.onLine) {
+        if (currentId) {
+            client.put("/api/v1/calculation/" + currentId, data)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        hasChanges = false
+                        originalContents = $("#input").val()
+                        updateTitle()
+                        updateLogin()
+                    }
+                })
+        } else {
+            client.post("/api/v1/calculation", data)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        window.location.hash = res.id
+                        loadCalc(res.id)
+                        updateTitle()
+                        updateLogin()
+                    }
+                })
+        }
     } else {
-        client.post("/api/v1/calculation", data)
-            .then(res=>res.json())
-            .then(res=>{
-                if (res.success) {
-                    window.location.hash = res.id
-                    loadCalc(res.id)
-                    updateTitle()
-                    updateLogin()
-                }
-            })
+        if (currentId) {
+            addUpdate({type: "UPDATE", id: currentId, data})
+        } else
+            addUpdate({type: "CREATE", data})
+
+        hasChanges = false
+        updateTitle()
     }
 }
 
@@ -514,4 +553,24 @@ $(document).ready(function(){
     })
 
     updateTitle()
+
+    $("#offline-badge").hide()
+
+    function onOnline(){
+        $("#offline-badge").hide()
+
+    }
+
+    function onOffline(){
+        $("#offline-badge").show()
+
+    }
+
+    window.onoffline = onOffline
+    window.ononline = onOnline
+
+    if (navigator.onLine)
+        onOnline()
+    else
+        onOffline()
 })
