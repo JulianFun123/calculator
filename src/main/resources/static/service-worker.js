@@ -5,7 +5,7 @@ const ASSETS = [
     "/images/apple-touch-icon.png",
     "/images/android-chrome-192x192.png",
     "/login.html",
-    "/logged_in.html",
+    "/logging_in.html",
     "/error.html"
 ]
 const CACHE_NAME = "CALC-1.1"
