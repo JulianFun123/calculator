@@ -2,8 +2,8 @@ const ASSETS = [
     "/",
     "/calc.css",
     "/calc.js",
-    "/apple-touch-icon.png",
-    "/android-chrome-192x192.png",
+    "/images/apple-touch-icon.png",
+    "/images/android-chrome-192x192.png",
     "/login.html",
     "/logged_in.html",
     "/error.html"
