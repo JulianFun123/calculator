@@ -9,7 +9,7 @@ const ASSETS = [
     "/error.html"
 ]
 const CACHE_NAME = "CALC-1.1"
-
+/*
 self.addEventListener('install', (e) => {
     console.log('[Service Worker] Install');
     e.waitUntil((async () => {
@@ -31,3 +31,4 @@ self.addEventListener('fetch', (e) => {
         return response;
     })());
 });
+*/
