@@ -3,7 +3,7 @@ Calculator is a text-editor-like calculator with live calculation preview. Just 
 
 Visit the calculator on [calc.gojani.xyz](https://calc.gojani.xyz) 
 
-![](./.github/calc.png)
-![](./.github/overview.png)
-![](./.github/graph.png)
-![](./.github/darkmode.png)
+![](./.github/img/calc.png)
+![](./.github/img/overview.png)
+![](./.github/img/graph.png)
+![](./.github/img/darkmode.png)
