@@ -33,7 +33,7 @@ public class UserController extends HttpController {
             userResponse.nickName = profile.get("full_name");
             userResponse.avatar = profile.getAvatar();
 
-            userResponse.calculations = Repo.get(Calculation.class).where("userId", profile.getId()).order("updatedAt", true).get().stream().map(calculation -> new CalculationResponse(calculation, true)).collect(Collectors.toList());
+            userResponse.calculations = Repo.get(Calculation.class).where("userId", profile.getId()).order("updatedAt", true).get().stream().map(calculation -> new CalculationResponse(calculation, false)).collect(Collectors.toList());
 
             userResponse.success = true;
         }

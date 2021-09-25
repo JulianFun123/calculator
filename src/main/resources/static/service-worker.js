@@ -8,27 +8,37 @@ const ASSETS = [
     "/logging_in.html",
     "/error.html"
 ]
-const CACHE_NAME = "CALC-1.1"
-/*
-self.addEventListener('install', (e) => {
-    console.log('[Service Worker] Install');
-    e.waitUntil((async () => {
-        const cache = await caches.open(CACHE_NAME);
-        console.log('[Service Worker] Caching all: app shell and content');
-        await cache.addAll(ASSETS);
-    })());
-});
 
-self.addEventListener('fetch', (e) => {
-    e.respondWith((async () => {
-        const r = await caches.match(e.request);
-        console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
-        if (r) { return r; }
-        const response = await fetch(e.request);
-        const cache = await caches.open(CACHE_NAME);
-        console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
-        cache.put(e.request, response.clone());
-        return response;
-    })());
+let cache_name = "CALC-1.2-sdgsdf";
+
+self.addEventListener("install", event => {
+    console.log(`installing to ${cache_name}...`);
+    caches.keys().then(async keys => keys.forEach(key => caches.delete(key)))
+        .then(()=> {
+            event.waitUntil(
+                caches
+                    .open(cache_name)
+                    .then(cache => {
+                        return cache.addAll(ASSETS);
+                    })
+                    .catch(err => console.log(err))
+            );
+        });
 });
-*/
+self.addEventListener("fetch", event => {
+    if (navigator.onLine) {
+        console.log("FETCHIN'")
+        event.respondWith(
+            fetch(event.request).catch(err =>
+                self.caches.open(cache_name).then(cache => cache.match("/offline.html"))
+            )
+        );
+    } else {
+        console.log(`LOADING FROM CACHE ${cache_name} ${event.request.url}`)
+        event.respondWith(
+            fetch(event.request).catch(err =>
+                caches.match(event.request).then(response => response)
+            )
+        );
+    }
+});

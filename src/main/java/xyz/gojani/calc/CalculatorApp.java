@@ -51,6 +51,7 @@ public class CalculatorApp extends WebApplication {
     protected void setupModels(SQL sql) throws ORMConfigurationException {
         ORMConfig ormConfig = new ORMConfig().setTablePrefix("calc_");
         ORM.register(Session.class.getPackage(), sql, ormConfig);
+        
         ORM.autoMigrate();
     }
 

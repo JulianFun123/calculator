@@ -43,165 +43,183 @@ const FORMULAS = {
     "pi (Symbol)": "π",
     "pi": "pi",
 
-    "Wurzel (√)": "sqrt(x)"
+    "Wurzel (√)": "sqrt(x)",
+
+    "Funktion erstellen": "f=(x) => x+3"
 }
 
-function calcAll(){
-    $("#preview").html("")
-    $("#errInfo").html("")
-    let previousLines = `
-            function log(a) {
-                return Math.log(a)
-            }
-            
-            function cos(a) { return Math.cos(a * Math.PI / 180 ) }
-            function acos(a) { return Math.acos(a)*180/Math.PI }
-            function tan(a) { return Math.tan(a * Math.PI / 180 ) }
-            function atan(a) { return Math.atan(a)*180/Math.PI }
-            function sin(a) { return Math.sin(a * Math.PI / 180 ) }
-            function asin(a) { return Math.asin(a)*180/Math.PI }
-            function round(a) { return Math.round(a) }
-            function floor(a) { return Math.floor(a) }
-            function min(a,b) { return Math.min(a,b) }
-            function max(a,b) { return Math.max(a,b) }
-            function rand() { return Math.random() }
-            function randInt(min = 0, max = 1) { return Math.floor(Math.random() * max + min) }
-            function sqrt(a) { return Math.sqrt(a) }
-            function wurzel(a) { return Math.sqrt(a) }
-            
-            
-            pi = Math.PI
-            π = Math.PI
-            E = Math.E
-            ;
-            `;
-    let lastResult = null
-    let lines = 0
-    let errors = 0
-    for (let line of $("#input").val().split("\n")) {
-        lines++
-        const lineInfo = $n("span").html("&nbsp;")
-        $("#errInfo").append(lineInfo)
-        if (line.trim().endsWith("\\") ) {
-            console.log(line.replaceAt(line.length-1, " ")+"\n")
-            previousLines += line.replaceAt(line.length-1, " ")+"\n"
-            $("#preview").html($("#preview").html()+"<br>")
-        } else {
-            try {
-                if (line.trim() != '' && !line.trim().startsWith("//") && !line.trim().startsWith("/*")) {
-                    // let ans = eval((previousLines+line).replaceAll('^', '**'))
+let makeEvalSafe = `
+function log(a) {
+    return Math.log(a)
+}
 
-                    // console.log("let ans = "+ans+"\n"+(previousLines+line).replaceAll('^', '**'));
+function cos(a) { return Math.cos(a * Math.PI / 180 ) }
+function acos(a) { return Math.acos(a)*180/Math.PI }
+function tan(a) { return Math.tan(a * Math.PI / 180 ) }
+function atan(a) { return Math.atan(a)*180/Math.PI }
+function sin(a) { return Math.sin(a * Math.PI / 180 ) }
+function asin(a) { return Math.asin(a)*180/Math.PI }
+function round(a) { return Math.round(a) }
+function floor(a) { return Math.floor(a) }
+function min(a,b) { return Math.min(a,b) }
+function max(a,b) { return Math.max(a,b) }
+function rand() { return Math.random() }
+function randInt(min = 0, max = 1) { return Math.floor(Math.random() * max + min) }
+function sqrt(a) { return Math.sqrt(a) }
+function wurzel(a) { return Math.sqrt(a) }
 
-                    const trimmedLine = line.trim()
 
-                    if (lastResult !== null) {
-                        if (trimmedLine.startsWith("+")
-                            || trimmedLine.startsWith("-")
-                            || trimmedLine.startsWith("/")
-                            || trimmedLine.startsWith("*")
-                            || trimmedLine.startsWith("^")
-                        ) {
-                            line = lastResult+" "+line
+pi = Math.PI
+π = Math.PI
+E = Math.E ; `;
+
+for (const name of Object.getOwnPropertyNames(window)) {
+    if (!["Math", "$", "$n", "eval", "getRealWindow"].includes(name))
+        makeEvalSafe += `var ${name} = undefined;\n`
+}
+let calcAll;
+function getRealWindow(){
+    return window
+}
+const REPLACEMENTS = {
+    '¹': '**1', '²': '**2', '³': '**3',
+    '⁴': '**4', '⁵': '**5', '⁶': '**6',
+    '⁷': '**7', '⁸': '**8', '⁹': '**9',
+    "^": "**"
+}
+function addCalcFunction() {
+    // Removes window and all it's functions
+    eval(makeEvalSafe)
+
+    calcAll = function () {
+        $("#preview").html("")
+        $("#errInfo").html("")
+
+        let lastResult = null
+        let lines = 0
+        let errors = 0
+        let previousLines = ``
+
+        let input = $("#input").val()
+        for (const key in REPLACEMENTS)
+            input = input.replaceAll(key, REPLACEMENTS[key])
+
+        for (let line of input.split("\n")) {
+            lines++
+            const lineInfo = $n("span").html("&nbsp;")
+            $("#errInfo").append(lineInfo)
+            if (line.trim().endsWith("\\")) {
+                console.log(line.replaceAt(line.length - 1, " ") + "\n")
+                previousLines += line.replaceAt(line.length - 1, " ") + "\n"
+                $("#preview").html($("#preview").html() + "<br>")
+            } else {
+                try {
+                    if (line.trim() != '' && !line.trim().startsWith("//") && !line.trim().startsWith("/*")) {
+                        const trimmedLine = line.trim()
+
+                        if (lastResult !== null) {
+                            if (trimmedLine.startsWith("+")
+                                || trimmedLine.startsWith("-")
+                                || trimmedLine.startsWith("/")
+                                || trimmedLine.startsWith("*")
+                                || trimmedLine.startsWith("^")
+                            ) {
+                                line = lastResult + " " + line
+                            }
+                            // console.log(line);
                         }
-                        // console.log(line);
-                    }
 
-                    if (trimmedLine.startsWith("(")) {
-                        line =  "; "+line;
-                    }
+                        if (trimmedLine.startsWith("(")) {
+                            line = "; " + line;
+                        }
 
-                    lastResult = eval("\n"+(previousLines+line)
-                        .replaceAll('^', '**')
-                        .replaceAll('¹', '**1')
-                        .replaceAll('²', '**2')
-                        .replaceAll('³', '**3')
-                        .replaceAll('⁴', '**4')
-                        .replaceAll('⁵', '**5')
-                        .replaceAll('⁶', '**6')
-                        .replaceAll('⁷', '**7')
-                        .replaceAll('⁸', '**8')
-                        .replaceAll('⁹', '**9')
-                    )
 
-                    const currentResult = lastResult
+                        (function () {
+                            lastResult = eval(previousLines+"\n var window, getRealWindow, $, $n = undefined; " + ("\n" + line))
+                        }).bind({})()
 
-                    if (typeof currentResult == 'function') {
-                        const popup = $n("div").css({
-                            'padding': '10px',
-                            'background': '#FFF',
-                            position: 'absolute',
-                            'border': '#00000011 solid 2px',
-                            'border-radius': '14px'
-                        }).hide()
+                        const currentResult = lastResult
 
-                        //.hide()
-                        const canvasEl = $n("canvas")
-                        canvasEl.getFirstElement().width = 100
-                        canvasEl.getFirstElement().height = 100
-                        popup.append(canvasEl)
+                        if (typeof currentResult == 'function') {
+                            const popup = $n("div").css({
+                                'padding': '10px',
+                                'background': '#FFF',
+                                position: 'absolute',
+                                'border': '#00000011 solid 2px',
+                                'border-radius': '14px'
+                            }).hide()
 
-                        $("#preview")
-                            .append(
-                                $n("a").text("draw")
-                                    .css({
-                                        background: "#00000011",
-                                        'border-radius': "5px",
-                                        padding: "1px 4px",
-                                        'margin-right': '10px',
-                                        'font-size': "20px",
-                                        'vertical-align': 'middle',
-                                        'cursor': "pointer"
-                                    })
-                                    .click(()=>{
-                                        popup.toggle()
-                                        const canvas = canvasEl.getFirstElement().getContext("2d")
-                                        let lastLine = null
-                                        canvas.fillStyle = "#00000011"
-                                        canvas.fillOpacity = 0.2
-                                        canvas.lineWidth=0.5
-                                        canvas.moveTo(50,0)
-                                        canvas.lineTo(50,100)
-                                        canvas.moveTo(0,50)
-                                        canvas.lineTo(100,50)
-                                        canvas.fillStyle = "#000000"
-                                        canvas.fillOpacity = 1
-                                        canvas.lineWidth=1
-                                        for (let y = -100; y < 100; y++) {
-                                            const x = currentResult(y)
-                                            //canvas.fillRect(x/2, y+50, 1, 1)
-                                            if (lastLine) {
-                                                console.log("yee")
-                                                canvas.moveTo(y+50, -x+50)
-                                                canvas.lineTo(lastLine.y+50, -lastLine.x+50)
+                            //.hide()
+                            const canvasEl = $n("canvas")
+                            canvasEl.getFirstElement().width = 100
+                            canvasEl.getFirstElement().height = 100
+                            popup.append(canvasEl)
+
+                            $("#preview")
+                                .append(
+                                    $n("a").text("draw")
+                                        .css({
+                                            background: "#00000011",
+                                            'border-radius': "5px",
+                                            padding: "1px 4px",
+                                            'margin-right': '10px',
+                                            'font-size': "20px",
+                                            'vertical-align': 'middle',
+                                            'cursor': "pointer",
+                                            'line-height': '0px'
+                                        })
+                                        .click(() => {
+                                            popup.toggle()
+                                            const canvas = canvasEl.getFirstElement().getContext("2d")
+                                            let lastLine = null
+                                            canvas.fillStyle = "#00000011"
+                                            canvas.fillOpacity = 0.2
+                                            canvas.lineWidth = 0.5
+                                            canvas.moveTo(50, 0)
+                                            canvas.lineTo(50, 100)
+                                            canvas.moveTo(0, 50)
+                                            canvas.lineTo(100, 50)
+                                            canvas.fillStyle = "#000000"
+                                            canvas.fillOpacity = 1
+                                            canvas.lineWidth = 1
+                                            for (let y = -100; y < 100; y++) {
+                                                const x = currentResult(y)
+                                                //canvas.fillRect(x/2, y+50, 1, 1)
+                                                if (lastLine) {
+                                                    console.log("yee")
+                                                    canvas.moveTo(y + 50, -x + 50)
+                                                    canvas.lineTo(lastLine.y + 50, -lastLine.x + 50)
+                                                }
+                                                canvas.stroke();
+                                                lastLine = {x, y}
                                             }
-                                            canvas.stroke();
-                                            lastLine = {x, y}
-                                        }
-                                    })
-                            )
-                            .append(popup)
+                                        })
+                                )
+                                .append(popup)
+                        }
+
+                        $("#preview").getFirstElement().appendChild(getRealWindow().document.createTextNode(currentResult))
+
+                        $("#preview").append($n("br"))
+                        previousLines += "" + line + "\n"
+                    } else {
+                        $("#preview").append($n("br"))
                     }
-
-                    $("#preview").getFirstElement().appendChild(document.createTextNode(currentResult))
-
+                } catch (e) {
+                    getRealWindow().console.log(e)
+                    $("#preview").append($n("i").css("color", "#00000022").text(e.message))
                     $("#preview").append($n("br"))
-                    previousLines += ""+line+"\n"
-                } else {
-                    $("#preview").append($n("br"))
+                    lineInfo.addClass('error').attr("title", e.message)
+                    errors++
                 }
-            } catch(e) {
-                $("#preview").append($n("i").css("color", "#00000022").text(e.message))
-                $("#preview").append($n("br"))
-                lineInfo.addClass('error').attr("title", e.message)
-                errors++
             }
         }
-    }
 
-    $("#errors").text("Errors: "+errors)
-    $("#lines").text("Lines: "+lines)
+        $("#errors").text("Errors: " + errors)
+        $("#lines").text("Lines: " + lines)
+    }
 }
+addCalcFunction()
 
 let loggedIn = false
 let currentId = null
@@ -230,6 +248,7 @@ function newEmpty(contents = "// Welcome to this awesome calculator!\n9+6\n3^3\n
 }
 
 function loadCalc(id){
+    console.log("LOADING "+id)
     const handleLoad = res => {
         currentId = res.id
         currentTitle = res.title
@@ -241,6 +260,7 @@ function loadCalc(id){
     }
 
     if (navigator.onLine) {
+        console.log("Fetching calc from API")
         client.get("/api/v1/calculation/" + id)
             .then(res => res.json())
             .then(res=> {
@@ -248,11 +268,26 @@ function loadCalc(id){
                     handleLoad(res)
             })
     } else if (localStorage["last-online"]) {
+        console.log("loading offline "+id)
         const lastOnline = JSON.parse(localStorage["last-online"])
 
-        lastOnline.calculations
-            .filter(c=>c.id==id)
-            .forEach(calc => handleLoad(calc))
+        let calc = lastOnline.calculations.filter(c=>c.id==id)[0]
+
+        let updates = []
+        if (localStorage["last-updates"])
+            updates = JSON.parse(localStorage["last-updates"])
+
+        if (!calc) {
+            let filtered = updates.filter(u=>u.type=='CREATE' && u.id==id)[0];
+            if (filtered)
+                calc = {id: filtered.id, title: filtered.data.title, contents: filtered.data.content}
+        }
+
+        for (const update of updates.filter(u => u.type == 'UPDATE' && u.id == id)) {
+            calc = {...calc, ...{title: update.data.title, contents: update.data.content}}
+        }
+        handleLoad(calc)
+
     }
 }
 
@@ -309,7 +344,25 @@ function updateLogin(){
             })
     else if (localStorage["last-online"]) {
         loggedIn = true
-        afterLogin(JSON.parse(localStorage["last-online"]))
+        let parse = JSON.parse(localStorage["last-online"]);
+
+        let updates = []
+
+        if (localStorage["last-updates"])
+            updates = JSON.parse(localStorage["last-updates"])
+
+        for (let update of updates) {
+            if (update.type == 'CREATE')
+                parse.calculations = [{id: update.id, title: update.data.title, contents: update.data.content, data: "---"}, ...parse.calculations]
+            if (update.type == 'UPDATE') {
+                for (const i in parse.calculations) {
+                    if (update.id == parse.calculations[i].id)
+                        parse.calculations[i] = {...parse.calculations[i], ...{title: update.data.title, contents: update.data.content}}
+                }
+            }
+        }
+
+        afterLogin(parse)
         return new Promise((r)=>{r()})
     }
 }
@@ -330,8 +383,6 @@ function addUpdate(update){
     let lastUpdates = JSON.parse(localStorage["last-updates"])
     lastUpdates.push(update)
     localStorage["last-updates"] = JSON.stringify(lastUpdates)
-
-
 }
 
 function save(){
@@ -370,10 +421,11 @@ function save(){
         if (currentId) {
             addUpdate({type: "UPDATE", id: currentId, data})
         } else
-            addUpdate({type: "CREATE", data})
+            addUpdate({type: "CREATE", id: "OFF:"+Math.floor(Math.random()*10000000), data})
 
         hasChanges = false
         updateTitle()
+        updateLogin()
     }
 }
 
@@ -427,7 +479,35 @@ function renderFormularList() {
     }
 }
 
-$(document).ready(function(){
+$(document).ready(async function(){
+    $("#sidenav").hide()
+    $("#current-calc").hide()
+    $("#formulas-list").hide()
+    $("#offline-badge").hide()
+    async function syncOfflineToOnline() {
+        if (localStorage["last-updates"]) {
+            $("#offline-badge").text("SYNCING...").show()
+            let updates = JSON.parse(localStorage["last-updates"])
+            let idReplacements = {}
+            for (const update of updates) {
+                if (update.type == 'UPDATE') {
+                    try {
+                        await client.put("/api/v1/calculation/" + (idReplacements[update.id] ? idReplacements[update.id] : update.id), update.data)
+                    } catch (e) {}
+                } else if (update.type == 'CREATE') {
+                    try {
+                        const res = await client.post("/api/v1/calculation", update.data).then(res=>res.json())
+                        idReplacements[update.id] = res.id
+                    } catch (e) {
+                    }
+                }
+            }
+            localStorage["last-updates"] = '[]'
+            $("#offline-badge").hide()
+        }
+    }
+    await syncOfflineToOnline()
+
     calcAll()
     $("#input").on("input", function(e){
         calcAll()
@@ -442,9 +522,6 @@ $(document).ready(function(){
     }).val(localStorage["saveState"])
     calcAll()
     $("#input").getFirstElement().style.height = $("#input").getFirstElement().scrollHeight+"px"
-
-    $("#sidenav").hide()
-    $("#current-calc").hide()
 
     $("#close-current-calc-menu").click(()=>{
         $("#current-calc").hide()
@@ -484,7 +561,7 @@ $(document).ready(function(){
         if (hasChanges) {
             save()
         }
-    }, 30*1000)
+    }, 15*1000)
 
     $("#sidenav").click(()=>{
         $("#sidenav").hide()
@@ -565,8 +642,6 @@ $(document).ready(function(){
         }
     })
 
-    $("#formulas-list").hide()
-
     renderFormularList()
 
     $("#formulas").click(()=>{
@@ -584,16 +659,16 @@ $(document).ready(function(){
 
     updateTitle()
 
-    $("#offline-badge").hide()
-
     function onOnline(){
         $("#offline-badge").hide()
-
+        syncOfflineToOnline()
+            .then(()=>{
+                updateLogin()
+            })
     }
 
     function onOffline(){
-        $("#offline-badge").show()
-
+        $("#offline-badge").text("OFFLINE").show()
     }
 
     window.onoffline = onOffline
