@@ -186,7 +186,6 @@ function addCalcFunction() {
                                                 const x = currentResult(y)
                                                 //canvas.fillRect(x/2, y+50, 1, 1)
                                                 if (lastLine) {
-                                                    console.log("yee")
                                                     canvas.moveTo(y + 50, -x + 50)
                                                     canvas.lineTo(lastLine.y + 50, -lastLine.x + 50)
                                                 }
