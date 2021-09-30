@@ -105,6 +105,7 @@ function addCalcFunction() {
             input = input.replaceAll(key, REPLACEMENTS[key])
 
         for (let line of input.split("\n")) {
+            const origLine = line
             lines++
             const lineInfo = $n("span").html("&nbsp;")
             $("#errInfo").append(lineInfo)
@@ -142,26 +143,47 @@ function addCalcFunction() {
 
                         if (typeof currentResult == 'function') {
                             const popup = $n("div").css({
-                                'padding': '10px',
                                 'background': '#FFF',
-                                position: 'absolute',
+                                position: 'fixed',
+                                left: 0,
+                                top: 0,
                                 'border': '#00000011 solid 2px',
                                 'border-radius': '14px'
-                            }).hide()
+                            }).append($n("a").text("✕").css({
+                                cursor: "pointer",
+                                position: "absolute",
+                                right: "40px",
+                                top: "40px",
+                                color: "#767676;",
+                                lineHeight: '0px',
+                                fontSize: "35px"
+                            }).click(()=>popup.toggle()))
+                             .hide()
 
                             //.hide()
                             const canvasEl = $n("canvas")
-                            canvasEl.getFirstElement().width = 100
-                            canvasEl.getFirstElement().height = 100
-                            popup.append(canvasEl)
 
+
+                            const width  = getRealWindow().innerWidth
+                            const height = getRealWindow().innerHeight-30
+
+                            canvasEl.getFirstElement().width =  width
+                            canvasEl.getFirstElement().height = height
+
+                            let renderWidth  = width  / 20
+                            let renderHeight = height / 20
+
+                            let offsetX = 0
+                            let offsetY = 0
+
+                            popup.append(canvasEl)
                             $("#preview")
                                 .append(
                                     $n("a").text("draw")
                                         .css({
-                                            background: "#00000011",
+                                            'background': "#00000011",
                                             'border-radius': "5px",
-                                            padding: "1px 4px",
+                                            'padding': "1px 4px",
                                             'margin-right': '10px',
                                             'font-size': "20px",
                                             'vertical-align': 'middle',
@@ -172,26 +194,93 @@ function addCalcFunction() {
                                             popup.toggle()
                                             const canvas = canvasEl.getFirstElement().getContext("2d")
                                             let lastLine = null
-                                            canvas.fillStyle = "#00000011"
-                                            canvas.fillOpacity = 0.2
-                                            canvas.lineWidth = 0.5
-                                            canvas.moveTo(50, 0)
-                                            canvas.lineTo(50, 100)
-                                            canvas.moveTo(0, 50)
-                                            canvas.lineTo(100, 50)
-                                            canvas.fillStyle = "#000000"
-                                            canvas.fillOpacity = 1
-                                            canvas.lineWidth = 1
-                                            for (let y = -100; y < 100; y++) {
-                                                const x = currentResult(y)
-                                                //canvas.fillRect(x/2, y+50, 1, 1)
-                                                if (lastLine) {
-                                                    canvas.moveTo(y + 50, -x + 50)
-                                                    canvas.lineTo(lastLine.y + 50, -lastLine.x + 50)
+                                            async function render() {
+                                                const w = width / renderWidth
+                                                const h = height / renderHeight
+                                                canvas.clearRect(0, 0, getRealWindow().innerWidth, getRealWindow().innerHeight - 30)
+
+                                                canvas.fillOpacity = 1
+                                                canvas.lineWidth = 1
+
+                                                canvas.font = "15px 'Space Mono'"
+                                                canvas.fillStyle = "#AAAAAA"
+                                                canvas.beginPath();
+                                                canvas.strokeStyle = '#EEEEEE';
+
+                                                for (let y = height/2; y < height; y += 25) { canvas.moveTo(0, y); canvas.lineTo(width, y) }
+                                                for (let y = height/2; y > 0; y -= 25) { canvas.moveTo(0, y); canvas.lineTo(width, y) }
+
+                                                let wa = null
+                                                for (let x = -width; x < width; x += wa || 100) {
+                                                    const v = (-(x / w)).toFixed(2).replaceAll(".00", "")
+                                                    canvas.fillText(v, width / 2 + x, height / 2 + 15)
+                                                    if (wa == null)
+                                                        wa = (v.split(".")[0].length+3)*15
+                                                }
+
+                                                for (let x = width/2; x < width; x += wa || 100) { canvas.moveTo(x, 0); canvas.lineTo(x, height) }
+                                                for (let x = width/2; x > 0; x -= wa || 100) { canvas.moveTo(x, 0); canvas.lineTo(x, height) }
+
+                                                for (let y = -height; y < height; y += 25)
+                                                    canvas.fillText((-(y / h)).toFixed(2).replaceAll(".00", ""), width / 2 + 10, height / 2 + y - 3)
+                                                canvas.stroke();
+
+                                                canvas.beginPath();
+                                                canvas.strokeStyle = "#656565"
+                                                canvas.moveTo(width / 2, 0)
+                                                canvas.lineTo(width / 2, height)
+                                                canvas.moveTo(0, height / 2)
+                                                canvas.lineTo(width, height / 2)
+                                                canvas.stroke();
+
+                                                canvas.beginPath();
+                                                canvas.strokeStyle = '#323232';
+                                                canvas.fillOpacity = 1
+                                                canvas.lineWidth = 1
+                                                let lastLine;
+
+                                                for (let y = -renderHeight; y < renderHeight; y+=(renderHeight / height)) {
+                                                    const x = currentResult(y - offsetX) - offsetY
+                                                    if (lastLine) {
+                                                        canvas.moveTo(y*w + width / 2, -x*h + height / 2)
+                                                        canvas.lineTo(lastLine.y*w + width / 2, -lastLine.x*h + height / 2)
+                                                    }
+
+                                                    canvas.stroke();
+                                                    lastLine = {x, y}
                                                 }
                                                 canvas.stroke();
-                                                lastLine = {x, y}
+                                                canvas.fillStyle = "#878787"
+                                                canvas.font = "25px 'Space Mono'"
+                                                canvas.fillText(line, 20, 40)
                                             }
+                                            render()
+                                            let mousedown = null
+                                            canvasEl.on("wheel", event => {
+                                                if (event.deltaY < 0) {
+                                                    renderWidth /= 1.1
+                                                    renderHeight /= 1.1
+                                                } else {
+                                                    renderWidth *= 1.1
+                                                    renderHeight *= 1.1
+                                                }
+                                                render()
+                                                event.preventDefault()
+                                                event.stopPropagation()
+                                            }).on("mousedown", e=>mousedown = {
+                                                x: e.pageX,
+                                                y: e.pageY,
+                                            })
+                                              .on("mouseup", ()=>mousedown = null)
+                                              .on("mousemove", e => {
+                                                  /*if (mousedown) {
+                                                      offsetX = -floor((mousedown.x - e.pageX)/20)
+                                                      offsetY = -floor((mousedown.y - e.pageY)/20)
+
+                                                      if (offsetX != 0 && offsetY != 0)
+                                                        render()
+                                                  }*/
+                                              })
                                         })
                                 )
                                 .append(popup)

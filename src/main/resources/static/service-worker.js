@@ -6,24 +6,34 @@ const ASSETS = [
     "/images/android-chrome-192x192.png",
     "/login.html",
     "/logging_in.html",
-    "/error.html"
+    "/error.html",
+    "https://fonts.googleapis.com/css2?family=DM+Sans:wght@200;300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap",
+    "https://js.gjni.eu/jdom.js",
+    "https://js.gjni.eu/accounts/oauth2.js",
+    "https://js.gjni.eu/cajax/2.0.0.js"
 ]
 
-let cache_name = "CALC-1.2-sdgsdf";
+let cache_name = "CALC-1.2-bh4vwsd";
 
 self.addEventListener("install", event => {
     console.log(`installing to ${cache_name}...`);
-    caches.keys().then(async keys => keys.forEach(key => caches.delete(key)))
-        .then(()=> {
-            event.waitUntil(
+    if (navigator.onLine) {
+        event.waitUntil(
+            caches.keys().then(async keys => {
+                for (let key of keys)
+                    await caches.delete(key)
+                return "";
+            }).then(() => {
                 caches
                     .open(cache_name)
                     .then(cache => {
                         return cache.addAll(ASSETS);
                     })
                     .catch(err => console.log(err))
-            );
-        });
+                return "";
+            })
+        );
+    }
 });
 self.addEventListener("fetch", event => {
     if (navigator.onLine) {
