@@ -106,6 +106,8 @@ function addCalcFunction() {
 
         for (let line of input.split("\n")) {
             const origLine = line
+            line = line.replace(/[*+\-/ ]*([0-9]+)([a-zA-Z]+[0-9]*)/, (_, g1,g2)=>`${g1}*${g2}`)
+                        .replace(/(^|(.*;[ ]*))([A-Za-z0-9]*)\(([^\)]*)\)([ ]*)(:?)=([ ]*)([^;]*)([ ]*)($|(;[ ]*))(.*)/, (_, $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)=>`${$1}; ${$3} = ${$4} => (${$8}); ${$12}`)
             lines++
             const lineInfo = $n("span").html("&nbsp;")
             $("#errInfo").append(lineInfo)
